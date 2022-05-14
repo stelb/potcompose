@@ -3,7 +3,6 @@
 import yaml
 
 def create_pot(name, flavour):
-  print("createpot %s %s"%(name, flavour))
   print("pot create -p %s -f %s -b %s -N %s"%(name,flavour,defbase,defnet))
 
 def create_volume(v):
@@ -32,9 +31,23 @@ def service(svc):
   if 'volumes' in svc:
     for v in svc['volumes']:
       create_volume(v)
+
   if 'ports' in svc:
     create_ports(svc['ports'])
+
+  if 'flavour' in svc:
+    flavour = svc['flavour']
+    create_pot(s, flavour)
+  else:
+    print("# no flavour") 
+
+  if 'volumes' in svc:
+    for v in svc['volumes']:
+      mount_volume(v)
+  else:
+    print("# no volumes")
       
+
 stream = open('potcompose.yml')
 compose = yaml.safe_load(stream)
 
@@ -52,25 +65,5 @@ for s in compose['services']:
   if serviceconfig:
     service(serviceconfig)
 
-    if 'volumes' in serviceconfig:
-      for v in serviceconfig['volumes']:
-        create_volume(v)
-    else:
-      print("# no volumes")
-  
-    if 'flavour' in serviceconfig:
-      flavour = serviceconfig['flavour']
-      create_pot(s, flavour)
-    else:
-      print("# no flavour") 
 
-    map = ''
-    if 'ports' in serviceconfig:
-      create_ports(serviceconfig['ports'])
-
-    if 'volumes' in serviceconfig:
-      for v in serviceconfig['volumes']:
-        mount_volume(v)
-    else:
-      print("# no volumes")
 
