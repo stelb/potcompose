@@ -1,0 +1,81 @@
+---
+version: 0.1
+defaults:
+  base: 13.0
+  network: public-bridge
+
+services:
+  redis:
+    flavour: redis
+    volumes:
+      - type: fscomp
+        source: redis-data
+        target: /var/db/redis
+
+  mariadb:
+    flavour: mariadb
+    volumes:
+      - type: fscomp
+        source: mariadb-data
+        target: /var/db/mysql
+
+  authelia:
+    flavour: authelia
+    volumes:
+      - type: fscomp
+        source: authelia-data
+        target: /var/db/authelia
+
+  lego:
+    flavour: lego
+    volumes:
+      - source: certs
+        target: /usr/local/etc/certs
+
+  rspamd:
+    flavour: redis
+    volumes:
+      - source: redis-data
+        target: /var/db/redis
+
+  dovecot:
+    flavour: dovecot
+    volumes:
+      - type: fscomp
+        source: dovecot-conf
+        target: /usr/local/etc/dovecot
+      - type: fscomp
+        source: maildir
+        target: /us/local/vmail
+        uid: 10000
+        gid: 10000
+      - type: fscomp
+        source: certs
+        target: /usr/local/etc/certs
+    ports:
+      - target: 993
+        published: 993
+
+  postfix:
+    flavour: postfix
+    ports:
+      - target: 25
+      - target: 465
+      - target: 587
+
+  postfixadmin:
+    flavour: pfa
+
+  roundcube:
+    flavour: roundcube
+
+  traefik:
+    flavour: traefik
+    volumes:
+      - source: traefik-config
+        target: /usr/local/etc/traefik
+    ports:
+      - target: 8088
+        published: 80
+      - target: 8443
+        published: 443
