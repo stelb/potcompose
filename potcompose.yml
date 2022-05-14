@@ -1,14 +1,14 @@
 ---
 version: 0.1
 defaults:
-  base: 13.0
-  network: public-bridge
+  base: 13.0                   # no per pot config yet
+  network: public-bridge       # 
 
 services:
   redis:
     flavour: redis
     volumes:
-      - type: fscomp
+      - type: fscomp           # only fscomp right now
         source: redis-data
         target: /var/db/redis
 
@@ -47,8 +47,8 @@ services:
       - type: fscomp
         source: maildir
         target: /us/local/vmail
-        uid: 10000
-        gid: 10000
+        uid: 10000            # ignored right now
+        gid: 10000            # 
       - type: fscomp
         source: certs
         target: /usr/local/etc/certs
@@ -59,7 +59,7 @@ services:
   postfix:
     flavour: postfix
     ports:
-      - target: 25
+      - target: 25            # only target, publish same port
       - target: 465
       - target: 587
 
