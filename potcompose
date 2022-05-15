@@ -2,6 +2,28 @@
 
 import yaml
 
+from schema import Schema, SchemaError, Optional, Or
+
+config_schema = Schema({
+    "version": float, # ignored
+    "defaults": {
+        "base": str,
+        "network": Or('public-bridge') # only public-bridge for now
+    },
+    "services": {
+      str: {
+        "flavour": str,
+        Optional("volumes"): [
+          { Optional("type"): str, "source": str, "target": str,
+            Optional("uid"): int, Optional("gid"): int }
+        ],
+        Optional("ports"): [
+          { Optional("published"): int, "target": int }
+        ]
+      }
+    }
+})
+
 def create_pot(name, flavour):
   print("pot create -p %s -f %s -b %s -N %s"%(name,flavour,defbase,defnet))
 
@@ -50,6 +72,14 @@ def service(svc):
 
 stream = open('potcompose.yml')
 compose = yaml.safe_load(stream)
+
+
+try:
+    config_schema.validate(compose)
+    print("Configuration is valid.")
+except SchemaError as se:
+    print("Config not valid")
+    print(se)
 
 defbase = compose['defaults']['base']
 if 'network' in compose['defaults']:
