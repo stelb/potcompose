@@ -1,7 +1,7 @@
 ---
 version: 0.1
 defaults:
-  base: 13.0                   # no per pot config yet
+  base: "13.0"                   # no per pot config yet
   network: public-bridge       # 
 
 services:
